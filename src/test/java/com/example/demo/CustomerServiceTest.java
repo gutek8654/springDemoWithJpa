@@ -32,11 +32,16 @@ class CustomerServiceTest {
     @InjectMocks
     CustomerService subject;
 
+    CustomerBuilder customerBuilder = new CustomerBuilder();
+
     @Test
     void getCustomerByPeselReturnsOneItemTest() {
         // given
         String pesel = "123";
-        CustomerModel expectedCustomer = new CustomerModel("Jan", "Kowalski", pesel);
+        CustomerModel expectedCustomer = customerBuilder.setFirstName("Jan")
+                .setLastName("Kowalski")
+                .setPesel(pesel)
+                .build();
         List<CustomerDBModel> list = Arrays.asList(CustomerDBModel.from(expectedCustomer));
         Mockito.when(mockRepository.findByPesel(pesel)).thenReturn(list);
 
@@ -68,8 +73,14 @@ class CustomerServiceTest {
         // given
         String pesel = "123";
         List<CustomerDBModel> list = Arrays.asList(
-                new CustomerDBModel("Jan", "Kowalski", pesel),
-                new CustomerDBModel("Adam", "Nowak", pesel));
+                CustomerDBModel.from(customerBuilder.setFirstName("Jan")
+                    .setLastName("Kowalski")
+                    .setPesel(pesel)
+                    .build()),
+                CustomerDBModel.from(customerBuilder.setFirstName("Adam")
+                    .setLastName("Nowak")
+                    .setPesel(pesel)
+                    .build()));
         Mockito.when(mockRepository.findByPesel(pesel)).thenReturn(list);
 
         // when
@@ -112,7 +123,10 @@ class CustomerServiceTest {
     void addCustomerTest() {
         // given
         String pesel = "123";
-        CustomerDBModel expected = new CustomerDBModel("Jan", "Kowalski", pesel);
+        CustomerDBModel expected = CustomerDBModel.from(customerBuilder.setFirstName("Jan")
+                .setLastName("Kowalski")
+                .setPesel(pesel)
+                .build());
         Mockito.when(mockRepository.findByPesel(pesel)).thenReturn(Arrays.asList());
 
         // when
@@ -126,7 +140,10 @@ class CustomerServiceTest {
     void addCustomerThatExistTest() {
         // given
         String pesel = "123";
-        CustomerDBModel customer = new CustomerDBModel("Jan", "Nowak", pesel);
+        CustomerDBModel customer = CustomerDBModel.from(customerBuilder.setFirstName("Jan")
+                .setLastName("Nowak")
+                .setPesel(pesel)
+                .build());
         Mockito.when(mockRepository.findByPesel(pesel)).thenReturn(Arrays.asList(customer));
 
         // when
@@ -141,7 +158,10 @@ class CustomerServiceTest {
     void deleteCustomerThatExistTest() {
         // given
         String pesel = "123";
-        CustomerDBModel customerDBModel = new CustomerDBModel("Jan", "Nowak", "123");
+        CustomerDBModel customerDBModel = CustomerDBModel.from(customerBuilder.setFirstName("Jan")
+                .setLastName("Nowak")
+                .setPesel(pesel)
+                .build());
         Mockito.when(mockRepository.findByPesel(pesel)).thenReturn(Arrays.asList(customerDBModel));
 
         // when
@@ -171,8 +191,14 @@ class CustomerServiceTest {
         // given
         String pesel = "123";
         Mockito.when(mockRepository.findByPesel(pesel)).thenReturn(Arrays.asList(
-                new CustomerDBModel("Jan", "Nowak", "123"),
-                new CustomerDBModel("Jan", "Nowak", "123")));
+                CustomerDBModel.from(customerBuilder.setFirstName("Jan")
+                        .setLastName("Nowak")
+                        .setPesel(pesel)
+                        .build()),
+                CustomerDBModel.from(customerBuilder.setFirstName("Jan")
+                        .setLastName("Nowak")
+                        .setPesel(pesel)
+                        .build())));
 
         // when
         Throwable thrown = catchThrowable(() -> subject.deleteCustomer(pesel));
@@ -185,8 +211,14 @@ class CustomerServiceTest {
     @Test
     void updateCustomerWhichNotExistTest() {
         // given
-        CustomerModel customerBefore = new CustomerModel("Jan", "Nowak", "123");
-        CustomerModel customerAfter = new CustomerModel("Adam", "Kowalski", "124");
+        CustomerModel customerBefore =  customerBuilder.setFirstName("Jan")
+                .setLastName("Nowak")
+                .setPesel("123")
+                .build();
+        CustomerModel customerAfter = customerBuilder.setFirstName("Adan")
+                .setLastName("Kowalski")
+                .setPesel("124")
+                .build();
         Mockito.when(mockRepository.findByPesel(customerBefore.getPesel())).thenReturn(Arrays.asList());
 
         // when
@@ -201,8 +233,14 @@ class CustomerServiceTest {
     @Test
     void updateCustomerThatExistTest() {
         // given
-        CustomerModel customerBefore = new CustomerModel("Jan", "Nowak", "123");
-        CustomerModel customerAfter = new CustomerModel("Adam", "Kowalski", "123");
+        CustomerModel customerBefore =  customerBuilder.setFirstName("Jan")
+                .setLastName("Nowak")
+                .setPesel("123")
+                .build();
+        CustomerModel customerAfter = customerBuilder.setFirstName("Adan")
+                .setLastName("Kowalski")
+                .setPesel("123")
+                .build();
         Mockito.when(mockRepository.findByPesel(customerBefore.getPesel())).thenReturn(Arrays.asList(CustomerDBModel.from(customerBefore)));
 
         // when
@@ -215,8 +253,14 @@ class CustomerServiceTest {
     @Test
     void updateCustomerThatExistMoreThanOnceTest() {
         // given
-        CustomerModel customerBefore = new CustomerModel("Jan", "Nowak", "123");
-        CustomerModel customerAfter = new CustomerModel("Adam", "Kowalski", "123");
+        CustomerModel customerBefore =  customerBuilder.setFirstName("Jan")
+                .setLastName("Nowak")
+                .setPesel("123")
+                .build();
+        CustomerModel customerAfter = customerBuilder.setFirstName("Adan")
+                .setLastName("Kowalski")
+                .setPesel("123")
+                .build();
         Mockito.when(mockRepository.findByPesel(customerBefore.getPesel())).thenReturn(Arrays.asList(
                 CustomerDBModel.from(customerBefore),
                 CustomerDBModel.from(customerBefore)

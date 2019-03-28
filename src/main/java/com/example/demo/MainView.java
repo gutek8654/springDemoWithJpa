@@ -22,15 +22,17 @@ public class MainView extends VerticalLayout {
     private ListDataProvider<CustomerModel> dataProvider;
     private TextField firstNameFilterField;
     private TextField lastNameFilterField;
+    private CustomerBuilder customerBuilder;
 
     public MainView(CustomerService customerService, CustomerEditorView editor){
+        customerBuilder = new CustomerBuilder();
         this.customerService = customerService;
         this.editor = editor;
         this.dataProvider = getData();
         this.grid = createGrid();
 
         this.addNewBtn = new Button("New customer", VaadinIcon.PLUS.create());
-        addNewBtn.addClickListener(e -> editor.editCustomer(new CustomerModel()));
+        addNewBtn.addClickListener(e -> editor.editCustomer(customerBuilder.build()));
 
         editor.setChangeHander(() -> {
             editor.setVisible(false);
